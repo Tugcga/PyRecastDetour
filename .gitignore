@@ -1,3 +1,4 @@
 *.obj
 test.py
 __pycache__
+*.pyc
