@@ -5,9 +5,9 @@ This is Python binary library for generating and using navigation mesh. Based on
 Feature:
 * Generate navmesh from *.obj file and also from raw vertices and polygons data
 * Save and load navmesh to (and from) binary file
-* Generate triangulation of the navmesh for using in external applications
+* Generate triangulation and poligonization of the navmesh for using in external applications
 * Find the shortest path between two input points and the shortest distance to the navmesh wall from the input point
-* Works in Python 3.x and Python 2.7
+* Works in Python 3.6 and Python 2.7
 
 ## How to use
 

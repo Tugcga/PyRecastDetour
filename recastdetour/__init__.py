@@ -240,3 +240,14 @@ class Navmesh():
                 triangles is a list [t11, t12, t13, t21, t22, t23, t31, t32, t33, t41, t42, t43, ...], where ti1, ti2 and ti3 are vertex indexes of the i-th triangle
         '''
         return self._navmesh.get_navmesh_trianglulation()
+
+    def get_navmesh_poligonization(self):
+        '''Return polygon description of the navigation mesh
+
+        Output:
+            the tuple (vertices, polygons, sizes), where
+                vertices is a list [x1, y1, z1, x2, y2, z2, ...] with coordinates of the navmesh vertices
+                polygons is a list [p11, p12, p13, ..., p1n1, p21, p22, p23, ..., p2n2, ...], where pij is the j-th vertex index of the polygon pi
+                sizes is a list [n1, n2, ...], where ni is a size of the i-th polygon
+        '''
+        return self._navmesh.get_navmesh_polygonization()
