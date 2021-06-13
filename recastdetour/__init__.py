@@ -3,7 +3,14 @@ import os
 if sys.version_info[0] == 2:
     import Py2RecastDetour as rd
 else:
-    from . import Py3RecastDetour as rd
+    if sys.version_info[1] == 6:
+        from . import Py36RecastDetour as rd
+    elif sys.version_info[1] == 7:
+        from . import Py37RecastDetour as rd
+    elif sys.version_info[1] == 8:
+        from . import Py38RecastDetour as rd
+    else:
+        from . import Py39RecastDetour as rd
 
 
 class Navmesh():
