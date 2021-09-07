@@ -44,3 +44,7 @@ path = navmesh.pathfind_straight(start, end)
 ```
 
 For more details, see ```Navmesh``` class methods descriptions.
+
+## Sources
+
+Source files of the Python module is placed on the separate [repository](https://github.com/Tugcga/PyRecastDetour-Sources).
