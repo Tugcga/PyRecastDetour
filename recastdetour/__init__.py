@@ -9,8 +9,10 @@ else:
         from . import Py37RecastDetour as rd
     elif sys.version_info[1] == 8:
         from . import Py38RecastDetour as rd
-    else:
+    elif sys.version_info[1] == 9:
         from . import Py39RecastDetour as rd
+    else:
+        from . import Py310RecastDetour as rd
 
 
 class Navmesh():
@@ -67,7 +69,7 @@ class Navmesh():
         '''Return the shortest path between start and end point inside generated navmesh.
 
         Input:
-            start - triple of floats ion the form [x, y, z]
+            start - triple of floats in the form [x, y, z]
             end - triple of floats in the form [x, y, z]
             vertex_mode - define how the result path is formed
                 if vertex_mode = 0 then points adden only in path corners,
