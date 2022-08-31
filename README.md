@@ -51,7 +51,7 @@ Source files of the Python module is placed on the separate [repository](https:/
 
 ## Viewer application
 
-The repository contains a simple GUI application, which use the module. It based on PySide6. So, to use the application this module should be installed into system.
+The repository contains a simple PySide6 based GUI application. So, to use the application, PySide6 module should be installed into system.
 
 #### Run
 ```
