@@ -4,3 +4,5 @@ test_02.py
 __pycache__
 *.pyc
 issues
+*.bin
+*.txt
