@@ -1,5 +1,6 @@
 import sys
 import os
+from typing import List, Tuple, Optional, Dict, Any
 if sys.version_info[0] == 2:
     import Py2RecastDetour as rd
 else:
@@ -12,21 +13,21 @@ else:
     elif sys.version_info[1] == 9:
         from . import Py39RecastDetour as rd
     else:
-        from . import Py310RecastDetour as rd
+        from . import Py310RecastDetour as rd  # type: ignore
 
 
 class Navmesh():
-    def __init__(self):
+    def __init__(self) -> None:
         self._navmesh = rd.Navmesh()
 
-    def init_by_obj(self, file_path):
+    def init_by_obj(self, file_path: str) -> None:
         '''Initialize geomery by reading *.obj file
 
         Input:
             file_path - path to the file with extension *.obj
         '''
         if os.path.exists(file_path):
-            extension = os.path.splitext(file_path)[1]
+            extension: str = os.path.splitext(file_path)[1]
             if extension == ".obj":
                 self._navmesh.init_by_obj(file_path)
             else:
@@ -34,7 +35,7 @@ class Navmesh():
         else:
             print("Fail init geometry. File " + file_path + " does not exist")
 
-    def init_by_raw(self, vertices, faces):
+    def init_by_raw(self, vertices: List[float], faces: List[int]) -> None:
         '''Initialize geometry by raw data. This data contains vertex positions and vertex indexes of polygons.
 
         Input:
@@ -52,12 +53,12 @@ class Navmesh():
         else:
             print("Fail init geometry from raw data. The number of vertices coordinates should be 3*k")
 
-    def build_navmesh(self):
+    def build_navmesh(self) -> None:
         '''Generate navmesh data. Before this method the geometry should be inited.
         '''
         self._navmesh.build_navmesh()
 
-    def get_log(self):
+    def get_log(self) -> str:
         '''Return the string with inetrnal log messages.
 
         Output:
@@ -65,7 +66,7 @@ class Navmesh():
         '''
         return self._navmesh.get_log()
 
-    def pathfind_straight(self, start, end, vertex_mode=0):
+    def pathfind_straight(self, start: Tuple[float, float, float], end: Tuple[float, float, float], vertex_mode: int = 0) -> Optional[List[Tuple[float, float, float]]]:
         '''Return the shortest path between start and end point inside generated navmesh.
 
         Input:
@@ -80,14 +81,14 @@ class Navmesh():
             list in the from [(x1, y1, z1), ... (xn, yn, zn)] with sequences of path points
         '''
         if len(start) == 3 and len(end) == 3:
-            coordinates = self._navmesh.pathfind_straight(start, end, vertex_mode)
+            coordinates: List[float] = self._navmesh.pathfind_straight(start, end, vertex_mode)
             points_count = len(coordinates) // 3
             return [(coordinates[3*i], coordinates[3*i + 1], coordinates[3*i + 2]) for i in range(points_count)]
         else:
             print("Fail to find straight path. Points should be triples")
             return None
 
-    def distance_to_wall(self, point):
+    def distance_to_wall(self, point: Tuple[float, float, float]) -> Optional[float]:
         '''Return the minimal distance between input point and navmesh edge
 
         Input:
@@ -102,7 +103,7 @@ class Navmesh():
             print("Fail calculate distance to wall. The point should be triple")
             return None
 
-    def raycast(self, start, end):
+    def raycast(self, start: Tuple[float, float, float], end: Tuple[float, float, float]) -> Optional[List[Tuple[float, float, float]]]:
         '''Return the segment of the line between start point and navmesh edge (or end point, if there are no collisions with navmesh edges)
 
         Input:
@@ -122,7 +123,7 @@ class Navmesh():
             print("Fails to raycast. Start and end should be triples")
             return None
 
-    def hit_mesh(self, start, end):
+    def hit_mesh(self, start: Tuple[float, float, float], end: Tuple[float, float, float]) -> Optional[Tuple[float, float, float]]:
         '''Return coordinates of the intersection point of the ray from start to end and geometry polygons
 
         Input:
@@ -136,14 +137,14 @@ class Navmesh():
         if len(start) == 3 and len(end) == 3:
             c = self._navmesh.hit_mesh(start, end)
             if len(c) == 3:
-                return tuple(c)
+                return (c[0], c[1], c[2])
             else:
                 return None  # if calculations are fail
         else:
             print("Fails to hit mesh. Start and end should be triples")
             return None
 
-    def get_settings(self):
+    def get_settings(self) -> Dict[str, Any]:
         '''Return current setting, which will be used for building navmesh
 
         Output:
@@ -164,7 +165,7 @@ class Navmesh():
         '''
         return self._navmesh.get_settings()
 
-    def set_settings(self, settings):
+    def set_settings(self, settings: Dict[str, Any]) -> None:
         '''Set settings for building navmesh
 
         Input:
@@ -185,7 +186,7 @@ class Navmesh():
         '''
         self._navmesh.set_settings(settings)
 
-    def get_partition_type(self):
+    def get_partition_type(self) -> int:
         '''Retrun the index of the partition type, which used for generating polygons in the navmesh
 
         Output:
@@ -196,7 +197,7 @@ class Navmesh():
         '''
         return self._navmesh.get_partition_type()
 
-    def set_partition_type(self, type):
+    def set_partition_type(self, type: int) -> None:
         '''Set partition type for generation navmesh
 
         Input:
@@ -207,7 +208,7 @@ class Navmesh():
         '''
         self._navmesh.set_partition_type(type)
 
-    def get_bounding_box(self):
+    def get_bounding_box(self) -> Optional[Tuple[Tuple[float, float, float], Tuple[float, float, float]]]:
         '''Return bounding box of the mesh
 
         Output:
@@ -221,7 +222,7 @@ class Navmesh():
         else:
             return None
 
-    def save_navmesh(self, file_path):
+    def save_navmesh(self, file_path: str) -> None:
         '''Save generated navmesh to the bindary firle with extension *.bin
 
         Input:
@@ -229,18 +230,18 @@ class Navmesh():
         '''
         self._navmesh.save_navmesh(file_path)
 
-    def load_navmesh(self, file_path):
+    def load_navmesh(self, file_path: str) -> None:
         '''Load navmesh from *.bin file
 
         Input:
-            file+path - path to the file with extension *.bin
+            file_path - path to the file with extension *.bin
         '''
         if os.path.exists(file_path):
             self._navmesh.load_navmesh(file_path)
         else:
             print("Fails to load navmesh. The file " + file_path + " does not exist")
 
-    def get_navmesh_trianglulation(self):
+    def get_navmesh_trianglulation(self) -> Tuple[List[float], List[int]]:
         '''Return triangulation data of the generated navmesh
 
         Output:
@@ -250,7 +251,7 @@ class Navmesh():
         '''
         return self._navmesh.get_navmesh_trianglulation()
 
-    def get_navmesh_poligonization(self):
+    def get_navmesh_poligonization(self) -> Tuple[List[float], List[int], List[int]]:
         '''Return polygon description of the navigation mesh
 
         Output:
