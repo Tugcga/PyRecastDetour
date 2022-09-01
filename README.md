@@ -68,6 +68,8 @@ Middle mouse button for camera pan
 
 Right mouse button and mouse wheel for camera zoom
 
+```F``` key for framing a scene
+
 ```File - Load Level``` allows to select ```*.obj``` file with level geometry and load it to the application. After level is loaded you can click ```Bake navmesh``` button for navmesh baking.
 
 ```File - Load Navmesh``` allows to select binary ```*.bin``` file with navmesh data and visualize it in the application.

@@ -100,7 +100,10 @@ class PolygonMesh(Qt3DRender.Qt3DRender.QGeometryRenderer):
             ab: Tuple[float, float, float] = (a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0])
             ab_length: float = math.sqrt(ab[0]**2 + ab[1]**2 + ab[2]**2)
 
-            return (ab[0] / ab_length, ab[1] / ab_length, ab[2] / ab_length)
+            if ab_length > 0.0001:
+                return (ab[0] / ab_length, ab[1] / ab_length, ab[2] / ab_length)
+            else:
+                return ab
 
         super(PolygonMesh, self).__init__()
         self._geom_view = Qt3DCore.QGeometryView(self)
@@ -142,8 +145,11 @@ class PolygonMesh(Qt3DRender.Qt3DRender.QGeometryRenderer):
                 vn[1] += v_normals[3*p + 1]
                 vn[2] += v_normals[3*p + 2]
             vn_length: float = math.sqrt(vn[0]**2 + vn[1]**2 + vn[2]**2)
-            for j in range(3):
-                normals.append(vn[j] / vn_length)
+            if vn_length > 0.00001:
+                for j in range(3):
+                    normals.append(vn[j] / vn_length)
+            else:
+                normals.extend(vn)
 
         # setup attributes
         self._pos_atttr.setName(Qt3DCore.QAttribute.defaultPositionAttributeName())
@@ -936,7 +942,7 @@ class SettingsWidget(QtWidgets.QWidget):
         self._settings_cell_size = QtWidgets.QDoubleSpinBox()
         self._settings_cell_size.setValue(0.3)
         self._settings_cell_size.setSingleStep(0.05)
-        self._settings_cell_size.setMinimum(0.0001)
+        self._settings_cell_size.setMinimum(0.001)
         self._settings_cell_size.valueChanged.connect(self._auto_bake)
 
         self._settings_cell_height = QtWidgets.QDoubleSpinBox()
@@ -1067,15 +1073,22 @@ class SettingsWidget(QtWidgets.QWidget):
         if self._options_auto_update.isChecked():
             self._bake_navmesh()
 
+    def _clamp(self, value: float, min_value: float, max_value: float) -> float:
+        if value > max_value:
+            return max_value
+        if value < min_value:
+            return min_value
+        return value
+
     def _bake_navmesh(self) -> None:
         if self._navmesh is not None and self._navmesh_mode == 0:
             start_time: float = time.time()
             # get settings
             settings: Dict[str, Any] = self._navmesh.get_settings()
-            settings["cellSize"] = self._settings_cell_size.value()
-            settings["cellHeight"] = self._settings_cell_height.value()
-            settings["agentHeight"] = self._settings_agent_height.value()
-            settings["agentRadius"] = self._settings_agent_radius.value()
+            settings["cellSize"] = self._clamp(self._settings_cell_size.value(), 0.001, float("inf"))
+            settings["cellHeight"] = self._clamp(self._settings_cell_height.value(), 0.001, float("inf"))
+            settings["agentHeight"] = self._clamp(self._settings_agent_height.value(), 0.001, float("inf"))
+            settings["agentRadius"] = self._clamp(self._settings_agent_radius.value(), 0.001, float("inf"))
             settings["agentMaxClimb"] = self._settings_agent_max_climb.value()
             settings["agentMaxSlope"] = self._settings_agent_max_slope.value()
             settings["regionMinSize"] = self._settings_region_min_size.value()
