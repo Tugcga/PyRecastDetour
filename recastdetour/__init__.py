@@ -222,24 +222,27 @@ class Navmesh():
         else:
             return None
 
-    def save_navmesh(self, file_path: str) -> None:
+    # Save and Load navmesh is not working
+    # It works, but mesh data obtained not from the structure, used for save/load, but from original baked mesh data
+    # Stored data is not generated when polygons size > 6
+    # def save_navmesh(self, file_path: str) -> None:
         '''Save generated navmesh to the bindary firle with extension *.bin
 
         Input:
             file_path - full path to the file to save
         '''
-        self._navmesh.save_navmesh(file_path)
+        # self._navmesh.save_navmesh(file_path)
 
-    def load_navmesh(self, file_path: str) -> None:
+    # def load_navmesh(self, file_path: str) -> None:
         '''Load navmesh from *.bin file
 
         Input:
             file_path - path to the file with extension *.bin
         '''
-        if os.path.exists(file_path):
-            self._navmesh.load_navmesh(file_path)
-        else:
-            print("Fails to load navmesh. The file " + file_path + " does not exist")
+        # if os.path.exists(file_path):
+            # self._navmesh.load_navmesh(file_path)
+        # else:
+            # print("Fails to load navmesh. The file " + file_path + " does not exist")
 
     def get_navmesh_trianglulation(self) -> Tuple[List[float], List[int]]:
         '''Return triangulation data of the generated navmesh

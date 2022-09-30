@@ -1,6 +1,7 @@
 *.obj
 test.py
 test_02.py
+benchmark.py
 __pycache__
 *.pyc
 issues
