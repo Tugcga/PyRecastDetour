@@ -1003,7 +1003,7 @@ class SettingsWidget(QtWidgets.QWidget):
         self._settings_verts_per_poly = QtWidgets.QSpinBox()
         self._settings_verts_per_poly.setValue(6)
         self._settings_verts_per_poly.setMinimum(3)
-        self._settings_verts_per_poly.setMaximum(64)
+        self._settings_verts_per_poly.setMaximum(6)
         self._settings_verts_per_poly.valueChanged.connect(self._auto_bake)
 
         self._settings_detail_sample_distance = QtWidgets.QDoubleSpinBox()
@@ -1121,13 +1121,7 @@ class SettingsWidget(QtWidgets.QWidget):
         self._navmesh_mode = 1  # binary data
         self._canvas.clear_scene()
 
-        # next we should
-        # 1. Init simple geometry
-        # 2. Bake simple navmesh
-        # 3. And only then load it instead baked mesh
         self._navmesh = rd.Navmesh()
-        self._navmesh.init_by_raw([4.0, 0.0, 4.0, -4.0, 0.0, 4.0, -4.0, 0.0, -4.0, 4.0, 0.0, -4.0], [4, 0, 3, 2, 1])
-        self._navmesh.build_navmesh()
         self._navmesh.load_navmesh(bin_path)
         (vertices, polygons, sizes) = self._navmesh.get_navmesh_poligonization()
         # draw navmesh into canvas and frame it, because the level is clear and camera move can be locked
@@ -1201,29 +1195,29 @@ class ViewApp(QtWidgets.QMainWindow):
         load_action.setStatusTip("Load level obj file")
         load_action.triggered.connect(self._load_action_call)
 
-        # load_nm_action = QtGui.QAction("&Load Navmesh", self)
-        # load_nm_action.setShortcut("Ctrl+O")
-        # load_nm_action.setStatusTip("Load navmesh from binary file")
-        # load_nm_action.triggered.connect(self._load_nm_action_call)
+        load_nm_action = QtGui.QAction("&Load Navmesh", self)
+        load_nm_action.setShortcut("Ctrl+O")
+        load_nm_action.setStatusTip("Load navmesh from binary file")
+        load_nm_action.triggered.connect(self._load_nm_action_call)
 
         # export actions
         export_txt_action = QtGui.QAction("&Export txt...", self)
         export_txt_action.setShortcut("Ctrl+T")
         export_txt_action.setStatusTip("Export navmesh to txt file")
         export_txt_action.triggered.connect(self._export_txt_action_call)
-        # export_bin_action = QtGui.QAction("&Export bin...", self)
-        # export_bin_action.setShortcut("Ctrl+B")
-        # export_bin_action.setStatusTip("Export navmesh to binary file")
-        # export_bin_action.triggered.connect(self._export_bin_action_call)
+        export_bin_action = QtGui.QAction("&Export bin...", self)
+        export_bin_action.setShortcut("Ctrl+B")
+        export_bin_action.setStatusTip("Export navmesh to binary file")
+        export_bin_action.triggered.connect(self._export_bin_action_call)
 
         menubar = self.menuBar()
         file_menu = menubar.addMenu("&File")
         file_menu.addAction(load_action)
-        # file_menu.addAction(load_nm_action)
+        file_menu.addAction(load_nm_action)
 
         export_submenu = file_menu.addMenu("&Export Navmeh")
         export_submenu.addAction(export_txt_action)
-        # export_submenu.addAction(export_bin_action)
+        export_submenu.addAction(export_bin_action)
 
         file_menu.addSeparator()
         file_menu.addAction(exit_action)

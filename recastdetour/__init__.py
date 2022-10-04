@@ -170,17 +170,17 @@ class Navmesh():
 
         Input:
             settings - dictionary with the following keys:
-                cellSize - cell size in world units
-                cellHeight - cell height in world units
-                agentHeight - agent height in world units
-                agentRadius - agent radius in world units
+                cellSize - cell size in world units, should be >= 0.0001
+                cellHeight - cell height in world units, should be >= 0.0001
+                agentHeight - agent height in world units, should be >= 0.0
+                agentRadius - agent radius in world units, should be >= 0.0
                 agentMaxClimb - agent max climb in world units
                 agentMaxSlope - agent max slope in degrees
                 regionMinSize - region minimum size in voxels
                 regionMergeSize - region merge size in voxels
                 edgeMaxLen - eEdge max length in world units
                 edgeMaxError - edge max error in voxels
-                vertsPerPoly - the maximum number of vertices in each polygon
+                vertsPerPoly - the maximum number of vertices in each polygon, should be integer from 3 to 6
                 detailSampleDist - detail sample distance in voxels
                 detailSampleMaxError - detail sample max error in voxel heights
         '''
@@ -222,27 +222,46 @@ class Navmesh():
         else:
             return None
 
-    # Save and Load navmesh is not working
-    # It works, but mesh data obtained not from the structure, used for save/load, but from original baked mesh data
-    # Stored data is not generated when polygons size > 6
-    # def save_navmesh(self, file_path: str) -> None:
+    def save_navmesh(self, file_path: str) -> None:
         '''Save generated navmesh to the bindary firle with extension *.bin
 
         Input:
             file_path - full path to the file to save
         '''
-        # self._navmesh.save_navmesh(file_path)
+        self._navmesh.save_navmesh(file_path)
 
-    # def load_navmesh(self, file_path: str) -> None:
+    def _generate_plane(self, plane_size) -> Tuple[List[float], List[int]]:
+        '''Internal function, generate geometry data for simple plane
+        '''
+        plane_verts: List[float] = [plane_size, 0.0, plane_size, 
+                                    -plane_size, 0.0, plane_size, 
+                                    -plane_size, 0.0, -plane_size, 
+                                    plane_size, 0.0, -plane_size]
+        plane_polys: List[int] = [4, 0, 3, 2, 1]
+        return (plane_verts, plane_polys)
+
+
+    def load_navmesh(self, file_path: str) -> None:
         '''Load navmesh from *.bin file
 
         Input:
             file_path - path to the file with extension *.bin
         '''
-        # if os.path.exists(file_path):
-            # self._navmesh.load_navmesh(file_path)
-        # else:
-            # print("Fails to load navmesh. The file " + file_path + " does not exist")
+        if os.path.exists(file_path):
+            # clear generated navmesh and load simple plane
+            # by default we will use the size 4.0
+            self.init_by_raw(*self._generate_plane(4.0))
+            settings: Dict[str, Any] = self.get_settings()
+            cell_size: float = settings["cellSize"]
+            if 4.0 / cell_size < 20.0:
+                # regenerate the plane
+                plane_size: float = cell_size * 20.0  # assume that the plane contains 20 tiles in each direction
+                self.init_by_raw(*self._generate_plane(plane_size))
+            # build this simple navmesh
+            self.build_navmesh()
+            self._navmesh.load_navmesh(file_path)
+        else:
+            print("Fails to load navmesh. The file " + file_path + " does not exist")
 
     def get_navmesh_trianglulation(self) -> Tuple[List[float], List[int]]:
         '''Return triangulation data of the generated navmesh
