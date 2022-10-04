@@ -230,7 +230,7 @@ class Navmesh():
         '''
         self._navmesh.save_navmesh(file_path)
 
-    def _generate_plane(self, plane_size) -> Tuple[List[float], List[int]]:
+    def _generate_plane(self, plane_size: float) -> Tuple[List[float], List[int]]:
         '''Internal function, generate geometry data for simple plane
         '''
         plane_verts: List[float] = [plane_size, 0.0, plane_size, 
