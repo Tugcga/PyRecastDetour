@@ -1,7 +1,8 @@
 *.obj
 test.py
 test_02.py
-benchmark.py
+benchmark_bake.py
+benchmark_pathfind.py
 test_load.py
 __pycache__
 *.pyc

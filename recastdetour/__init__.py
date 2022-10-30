@@ -88,6 +88,40 @@ class Navmesh():
             print("Fail to find straight path. Points should be triples")
             return None
 
+    def pathfind_straight_batch(self, coordinates: List[float], vertex_mode: int = 0) -> Optional[List[List[Tuple[float, float, float]]]]:
+        '''Find path between multiple input points.
+
+        Input:
+            coordinates - list of floats in the form [s1_x, s1_y, s1_z, e1_x, e1_y, e1_z, s2_x, s2_y, s2_z, e2_x, e2_y, e2_z, ...], where
+                si_* are coordinates of the i-th start point, ei_* are coordinates of the i-th end point.
+                The number of float values in the list should be x6.
+            vertex_mode - define how the result path is formed
+                if vertex_mode = 0 then points adden only in path corners,
+                if vertex_mode = 1 then a vertex at every polygon edge crossing where area changes is added
+                if vertex_mode = 2 then vertex at every polygon edge crossing is added
+
+        Output:
+            One list in the form [[(p1_x1, p1_y1, p1_z1), ...], [(p2_x1, p2_y1, p2_z1), ...]], where each item in the list is a list
+                with 3-tuples of path coordinates. The number of ites is the same as the number of input pairs (len(coordinates) // 6)
+        '''
+        batch_size: int = len(coordinates) // 6
+        if len(coordinates) % 6 == 0:
+            output: List[float] = self._navmesh.pathfind_straight_batch(coordinates, vertex_mode)
+            result_array: List[List[Tuple[float, float, float]]] = []
+            index: int = 0
+            for step in range(batch_size):
+                step_size = int(output[index])  # the number of points in the path
+                step_array: List[Tuple[float, float, float]] = []
+                index += 1
+                for p_index in range(step_size):
+                    step_array.append((output[index], output[index + 1], output[index + 2]))
+                    index += 3
+                result_array.append(step_array)
+            return result_array
+        else:
+            print("Fail to find straight path for several points. The number of input coorsinates should be divisible by 6")
+            return None
+
     def distance_to_wall(self, point: Tuple[float, float, float]) -> Optional[float]:
         '''Return the minimal distance between input point and navmesh edge
 
